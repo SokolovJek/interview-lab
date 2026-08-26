@@ -1,47 +1,42 @@
 from datetime import datetime, timedelta
 from typing import Optional
+import secrets
 from jose import jwt
 
 from app.core.config import settings
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def generate_session_hash() -> str:
     """
-    генерация токена JWT
-    :param data: словарь с данными (sub)
-    :param expires_delta: время истечения токена
-    :return: токен
+    Генерация уникального hash для сессии (logout)
+    Используем secrets вместо bcrypt (быстро и безопасно)
     """
+    return secrets.token_urlsafe(32)
+
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """Создание access_token"""
     to_encode = data.copy()
+
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+
     to_encode.update({'exp': expire})
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    return encoded_jwt
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
-def create_refresh_token(email: str, hash_to_logout: str = None):
-    """
-    Создание refresh_token с hash_to_logout
-    """
+def create_refresh_token(email: str, session_hash: str) -> str:
+    """Создание refresh_token с session_hash"""
     expires = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-
-    data = {"sub": email}
-    if hash_to_logout:
-        data["hash_to_logout"] = hash_to_logout
-
+    data = {"sub": email, "session_hash": session_hash}
     return create_access_token(data=data, expires_delta=expires)
 
 
-def decode_token(token: str, secret_key: str, algorithm: str):
-    """
-    Декодирование токена
-    :param token: токен
-    :param secret_key: ключ для разшифровки
-    :param algorithm: алгоритм
-    :return: dict = payload
-    """
-    payload = jwt.decode(token, key=secret_key, algorithms=algorithm)
-    return payload
+def decode_token(token: str) -> Optional[dict]:
+    """Декодирование токена"""
+    try:
+        return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    except jwt.JWTError:
+        return None

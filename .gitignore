@@ -79,3 +79,4 @@ docker-compose.override.yml
 # Директории с данными
 data/
 tmp/
+backend/db_structures.txt

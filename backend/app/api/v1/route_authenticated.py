@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 
 from app.core.database import get_db
 from app.schemas.tokens import Token
-from app.core.auth_service import AuthService
+from app.services.auth_service import AuthService
 
 
 router = APIRouter()
@@ -21,7 +21,7 @@ def login_for_access_token(
     Аутентификация пользователя и выдача токенов
     """
     user, access_token, refresh_token = AuthService.login(
-        email=form_data.username,
+        email=form_data.username,  # OAuth2 использует поле username для email
         password=form_data.password,
         db=db
     )
@@ -47,7 +47,7 @@ def logout(
     """
     Выход пользователя из системы
     """
-    # Получаем пользователя
+    # Получаем пользователя из токена
     user = AuthService.get_current_user(token, db)
     if not user:
         raise HTTPException(
@@ -91,14 +91,7 @@ async def refresh(
             db=db
         )
 
-        if not access_token:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail='Недействительный токен'
-            )
-
         return JSONResponse({
-            'result': True,
             'access_token': access_token,
             'refresh_token': new_refresh_token,
             'token_type': 'bearer'
@@ -106,26 +99,8 @@ async def refresh(
 
     except HTTPException:
         raise
-    except Exception:
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='Ошибка на сервере'
+            detail=f'Ошибка при обновлении токенов: {str(e)}'
         )
-
-
-def get_current_user_from_token(
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
-):
-    """
-    Зависимость для получения текущего пользователя
-    """
-    user = AuthService.get_current_user(token, db)
-
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Не удалось подтвердить учетные данные'
-        )
-
-    return user

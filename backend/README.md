@@ -90,9 +90,14 @@ backend/
 │   ├── core/                 # Ядро приложения
 │   │   ├── __init__.py
 │   │   ├── config.py         # Настройки из .env (Pydantic)
-│   │   ├── security.py       # JWT, хэширование паролей
+│   │   ├── security.py       # JWT токены (общее)
 │   │   ├── database.py       # Engine, SessionLocal, get_db()
-│   │   └── user_service.py   # Бизнес-логика пользователей
+│   │   └── hashing.py        # Хеширование паролей (только bcrypt)
+│   │
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── auth_service.py       # Логин, logout, refresh
+│   │   └── user_service.py       # CRUD пользователей
 │   │
 │   ├── models/               # SQLAlchemy модели
 │   │   ├── __init__.py
