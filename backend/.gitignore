@@ -1,0 +1,14 @@
+__pycache__
+env
+test_db.db
+help.txt
+.idea
+examples.py
+sql_app.db
+.env
+.env.local
+.env.*.local
+*.db
+*.sqlite
+*.pyc
+.pytest_cache/
