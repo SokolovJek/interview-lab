@@ -1,8 +1,7 @@
 ### Для запуска приложения:
 1) создаем виртуальное окружение: `python3 -m venv env`
-2) входим в него: `source env/bin/activate` | `.\env\Scripts\activate`
-3) `pip install -r requirements.txt`
-4) настраиваем базу данных в файле .env:
+2) `pip install -r requirements.txt`
+3) настраиваем базу данных в файле .env:
    ```
    # Для PostgreSQL
    DATABASE_URL=postgresql://user:password@localhost:5432/db_name
@@ -10,7 +9,8 @@
    # Для SQLite
    DATABASE_URL=sqlite:///./sql_app.db
    ```
-5) Запуск приложения
+
+4) Запуск приложения
    ```
    # 1. Убедись, что PostgreSQL запущен
    psql -U postgres -d interview_lab -c "SELECT 1"
@@ -34,7 +34,7 @@
    alembic upgrade head
 
    # 8. Проверь таблицы
-   psql -U postgres -d interview_lab -c "\dt"
+   psql -U user_name -d interview_lab -c "\dt"
 
    # 9. Запусти приложение
    uvicorn app.main:app --reload
