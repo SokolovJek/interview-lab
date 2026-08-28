@@ -85,7 +85,7 @@ backend/
 │   │       ├── router.py     # Сборщик всех роутеров для v1
 │   │       ├── auth.py       # Логин, регистрация, logout
 │   │       ├── users.py      # CRUD для пользователей
-│   │       └── questions.py  # Эндпоинты для работы с вопросами
+│   │       └── question.py  # Эндпоинты для работы с вопросами
 │   │
 │   ├── core/                 # Ядро приложения
 │   │   ├── __init__.py
@@ -97,25 +97,29 @@ backend/
 │   ├── services/
 │   │   ├── __init__.py
 │   │   ├── auth_service.py       # Логин, logout, refresh
-│   │   └── user_service.py       # CRUD пользователей
+│   │   ├── question_service.py   # Работа с вопросами
+│   │   └── user_service.py       # Работа с пользователями
 │   │
 │   ├── models/               # SQLAlchemy модели
 │   │   ├── __init__.py
 │   │   ├── base.py           # Базовый класс с id, created_at
 │   │   ├── user.py
 │   │   ├── question.py
-│   │   └── progress.py
+│   │   └── user_question_status.py
 │   │
 │   ├── schemas/              # Pydantic схемы
 │   │   ├── __init__.py
 │   │   ├── token.py
 │   │   ├── user.py
+│   │   ├── question.py
+│   │   ├── user_question_status.py
 │   │   └── question.py
 │   │
 │   ├── crud/                 # Работа с БД
 │   │   ├── __init__.py
 │   │   ├── base.py           # Базовый CRUD класс
 │   │   ├── user.py
+│   │   ├── user_question_status.py
 │   │   └── question.py
 │   │
 │   └── utils/                # Вспомогательные функции
@@ -127,6 +131,9 @@ backend/
 │   ├── conftest.py           # Фикстуры
 │   ├── test_auth.py
 │   └── test_questions.py
+│
+└── scripts/                  # Вспомогательные скрипты
+    ├── create_superuser.py
 
 ```
 
@@ -142,6 +149,12 @@ alembic upgrade head
 
 # 5. Запускаешь приложение
 uvicorn app.main:app --reload
+```
+
+### Создать Суперпользователя
+```
+cd backend
+python scripts/create_superuser.py
 ```
 
 ### Полезные команды:

@@ -15,8 +15,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from app.core.config import settings
 from app.models.base import Base
 from app.models import user # noqa
-# from app.models import question  # noqa
-# from app.models import progress  # noqa
+from app.models import question  # noqa
+from app.models import user_question_status  # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -32,9 +32,6 @@ config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 # Добавляем метаданные моделей
 target_metadata = Base.metadata
-
-# Используем DATABASE_URL из настроек
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 
 def run_migrations_offline() -> None:
