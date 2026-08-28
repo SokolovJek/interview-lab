@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
 from app.models.user import User
-from app.schemas.question import QuestionCreate, QuestionUpdate, QuestionAnswerResponse
+from app.schemas.question import QuestionCreate, QuestionUpdate
+from app.schemas.user_question_status import UserQuestionStatusUpdate
 from app.crud.question import (
     create_question as crud_create_question,
     get_question as crud_get_question,
@@ -13,7 +14,7 @@ from app.crud.question import (
     delete_question as crud_delete_question,
 )
 from app.crud.user_question_status import (
-    update_status_after_answer,
+    update_question_status,
     get_user_stats as crud_get_user_stats,
 )
 
@@ -86,3 +87,11 @@ class QuestionService:
     def get_user_stats(user_id: int, db: Session) -> Dict[str, Any]:
         """Получение статистики пользователя"""
         return crud_get_user_stats(user_id, db)
+
+    @staticmethod
+    def update_question_status(
+        question_status_data: UserQuestionStatusUpdate,
+        db: Session
+        ) -> Dict[str, Any]:
+        """Обновление статуса вопроса"""
+        return update_question_status(question_status_data, db)

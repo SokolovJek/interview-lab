@@ -25,7 +25,7 @@ from app.crud.user_question_status import (
     get_by_user_and_question,
     get_by_user,
     get_by_status,
-    update_status_after_answer,
+    update_question_status,
     get_user_stats,
 )
 
@@ -50,6 +50,6 @@ __all__ = [
     "get_by_user_and_question",
     "get_by_user",
     "get_by_status",
-    "update_status_after_answer",
+    "update_question_status",
     "get_user_stats",
 ]

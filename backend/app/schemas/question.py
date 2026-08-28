@@ -30,22 +30,3 @@ class QuestionResponse(QuestionBase):
 class QuestionWithStatusResponse(QuestionResponse):
     """Вопрос с информацией о статусе пользователя"""
     user_status: Optional[UserQuestionStatusResponse] = None
-
-
-# ============================================
-# ДЛЯ ПРОВЕРКИ ОТВЕТОВ
-# ============================================
-
-class QuestionAnswerRequest(BaseModel):
-    """Запрос на проверку ответа"""
-    question_id: int = Field(..., description="ID вопроса")
-    user_answer: str = Field(..., min_length=1, description="Ответ пользователя")
-
-
-class QuestionAnswerResponse(BaseModel):
-    """Ответ на проверку"""
-    is_correct: bool = Field(..., description="Правильно ли ответил пользователь")
-    correct_answer: Optional[str] = Field(None, description="Правильный ответ (если ответ неверный)")
-    attempts: int = Field(..., description="Количество попыток")
-    status: str = Field(..., description="Текущий статус вопроса")
-    message: str = Field(..., description="Сообщение о результате")

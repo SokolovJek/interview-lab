@@ -3,7 +3,7 @@ from typing import Optional, List
 from datetime import datetime
 
 from app.models.user_question_status import UserQuestionStatus
-from app.schemas.user_question_status import UserQuestionStatusCreate
+from app.schemas.user_question_status import UserQuestionStatusCreate, UserQuestionStatusUpdate
 
 
 def create_status(status_data: UserQuestionStatusCreate, db: Session) -> UserQuestionStatus:
@@ -60,21 +60,25 @@ def get_by_status(
     ).offset(skip).limit(limit).all()
 
 
-def update_status_after_answer(
-    user_id: int,
-    question_id: int,
-    is_correct: bool,
+def update_question_status(
+    status_data: UserQuestionStatusUpdate,
     db: Session
 ) -> UserQuestionStatus:
     """Обновление статуса после ответа на вопрос"""
+    user_id = status_data.user_id
+    question_id = status_data.question_id
+    new_status  = status_data.status
+
     status = get_by_user_and_question(user_id, question_id, db)
+
+    is_correct = 1 if new_status  in ['passed'] else 0
 
     if not status:
         # Создаем новую запись
         status_data = UserQuestionStatusCreate(
             user_id=user_id,
             question_id=question_id,
-            status="passed" if is_correct else "in_progress"
+            status=new_status
         )
         status = create_status(status_data, db)
         status.attempts = 1
@@ -85,12 +89,7 @@ def update_status_after_answer(
         status.attempts += 1
         if is_correct:
             status.correct += 1
-            status.status = "passed"
-        else:
-            if status.attempts >= 3:
-                status.status = "repeat"
-            else:
-                status.status = "in_progress"
+        status.status = new_status
         status.last_attempt_at = datetime.utcnow()
 
     db.add(status)

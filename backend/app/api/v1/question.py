@@ -11,7 +11,7 @@ from app.schemas.question import (
     QuestionResponse,
     QuestionWithStatusResponse
 )
-from app.schemas.user_question_status import UserQuestionStatusResponse
+from app.schemas.user_question_status import UserQuestionStatusResponse, UserQuestionStatusUpdateRequest, UserQuestionStatusUpdate
 from app.services.question_service import QuestionService
 from app.crud.user_question_status import (
     get_by_user_and_question,
@@ -143,4 +143,21 @@ def get_my_questions(
         db=db,
         skip=skip,
         limit=limit
+    )
+
+@router.post("/status", response_model=UserQuestionStatusResponse)
+def update_status(
+    question_status_data: UserQuestionStatusUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user_from_token)
+):
+    """Создание/обновление статуса"""
+    status_data = UserQuestionStatusUpdate(
+        status=question_status_data.status,
+        question_id=question_status_data.question_id,
+        user_id=current_user.id
+    )
+    return QuestionService.update_question_status(
+        status_data,
+        db=db
     )
