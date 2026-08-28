@@ -9,9 +9,7 @@ from app.schemas.question import (
     QuestionCreate,
     QuestionUpdate,
     QuestionResponse,
-    QuestionWithStatusResponse,
-    QuestionAnswerRequest,
-    QuestionAnswerResponse,
+    QuestionWithStatusResponse
 )
 from app.schemas.user_question_status import UserQuestionStatusResponse
 from app.services.question_service import QuestionService

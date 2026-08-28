@@ -7,19 +7,51 @@ from app.models.base import BaseModel
 class UserQuestionStatus(BaseModel):
     __tablename__ = "user_question_status"
 
-    user_id = Column(Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
-    question_id = Column(Integer, ForeignKey("questions.id", ondelete="CASCADE"), nullable=False)
-
+    user_id = Column(
+        Integer,
+        ForeignKey("user.id", ondelete="CASCADE"),
+        nullable=False,
+        comment="ID пользователя, владельца статуса"
+    )
+    question_id = Column(
+        Integer,
+        ForeignKey("questions.id", ondelete="CASCADE"),
+        nullable=False,
+        comment="ID вопроса, к которому относится статус"
+    )
     status = Column(
         Enum('passed', 'not_passed', 'repeat', 'in_progress', name='question_status'),
         nullable=False,
         default='not_passed',
-        server_default='not_passed'
+        server_default='not_passed',
+        comment="Статус: passed - сдан, not_passed - не сдан, repeat - на повторение, in_progress - в процессе"
     )
-    attempts = Column(Integer, nullable=False, default=0, server_default="0")
-    correct = Column(Integer, nullable=False, default=0, server_default="0")
+    attempts = Column(
+        Integer,
+        nullable=False,
+        default=0,
+        server_default="0",
+        comment="Количество попыток ответить на вопрос"
+    )
+    correct = Column(
+        Integer,
+        nullable=False,
+        default=0,
+        server_default="0",
+        comment="Количество правильных ответов на вопрос"
+    )
+    last_attempt_at = Column(
+        DateTime,
+        nullable=True,
+        comment="Время последней попытки ответить на вопрос"
+    )
+    first_seen_at = Column(
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
+        comment="Время первого знакомства с вопросом"
+    )
 
-    last_attempt_at = Column(DateTime, nullable=True)
     first_seen_at = Column(DateTime, nullable=False, server_default=func.now())
 
     # Связи
