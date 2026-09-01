@@ -1,19 +1,23 @@
 <template>
-  <div id="app">
+  <AppLayout>
     <router-view />
-  </div>
+  </AppLayout>
 </template>
 
 <script setup>
-import { useAuthStore } from './stores/auth'
-import { onMounted } from 'vue'
-
-const authStore = useAuthStore()
-
-onMounted(() => {
-  // Восстанавливаем сессию при загрузке
-  if (authStore.token && !authStore.user) {
-    authStore.getCurrentUser()
-  }
-})
+import AppLayout from '@/components/layout/AppLayout.vue'
 </script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: #f5f7fa;
+  color: #2c3e50;
+}
+</style>

@@ -49,6 +49,16 @@ def get_all_questions(
     return QuestionService.get_all_questions(skip=skip, limit=limit, db=db)
 
 
+@router.get("/random", response_model=List[QuestionResponse])
+def get_random_questions(
+    limit: int = Query(10, ge=1, le=50),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user_from_token)
+):
+    """Получение случайных вопросов"""
+    return QuestionService.get_random_questions(limit=limit, db=db)
+
+
 @router.get("/{question_id}", response_model=QuestionWithStatusResponse)
 def get_question(
     question_id: int,
@@ -100,16 +110,6 @@ def delete_question(
         )
     QuestionService.delete_question(question_id, db)
     return {"message": f"Вопрос с id {question_id} успешно удален"}
-
-
-@router.get("/random", response_model=List[QuestionResponse])
-def get_random_questions(
-    limit: int = Query(10, ge=1, le=50),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user_from_token)
-):
-    """Получение случайных вопросов"""
-    return QuestionService.get_random_questions(limit=limit, db=db)
 
 
 @router.get("/my/stats")

@@ -16,4 +16,4 @@
 ## Установка и запуск
 - [`backend`](https://github.com/SokolovJek/interview-lab/blob/main/backend/README.md)
 
-- [`frontend`](....)
+- [`frontend`](https://github.com/SokolovJek/interview-lab/blob/main/frontend/README.md)
