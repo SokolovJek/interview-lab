@@ -1,0 +1,20 @@
+# backend/.dockerignore
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+.env
+.venv
+venv
+env
+alembic/versions/*.pyc
+.git
+.gitignore
+README.md
+.DS_Store

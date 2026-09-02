@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from pydantic import ConfigDict, Field
+from typing import List
 
 
 class Settings(BaseSettings):
@@ -21,6 +22,13 @@ class Settings(BaseSettings):
     DB_POOL_SIZE: int = 5
     DB_MAX_OVERFLOW: int = 10
     DB_ECHO: bool = False
+
+    # CORS
+    BACKEND_CORS_ORIGINS: List[str] = [
+        "http://localhost:5173",
+        "http://localhost:80",
+        "http://127.0.0.1:5173"
+    ]
 
     # Указываем Pydantic где искать переменные окружения
     model_config = ConfigDict(
