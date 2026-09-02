@@ -157,6 +157,15 @@ cd backend
 python scripts/create_superuser.py
 ```
 
+
+### Наполнить БД данными с файла
+```
+cd backend
+python scripts/parse_questions_from_file.py .py --tag Python --category "ООП" --difficulty hard
+python scripts/parse_questions_from_file.py .py --tag SQL --file scripts/Python_Developer_Questions.md
+python scripts/parse_questions_from_file.py .py --tag SQL --file scripts/SQL_Questions.md
+```
+
 ### Полезные команды:
 ```
 # Откат на одну миграцию

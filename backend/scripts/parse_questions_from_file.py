@@ -1,5 +1,6 @@
 import sys
 import re
+import argparse
 from pathlib import Path
 
 # Добавляем путь к проекту для импорта наших модулей
@@ -60,8 +61,15 @@ def parse_questions_from_md(content: str):
     return questions
 
 
-def seed_questions():
-    """Главная функция для загрузки и сохранения вопросов в БД."""
+def seed_questions(tag: str = None, category: str = None, difficulty: str = "medium"):
+    """
+    Главная функция для загрузки и сохранения вопросов в БД.
+
+    Args:
+        tag: Тег для всех вопросов (например, 'Python')
+        category: Категория для всех вопросов (например, 'Основы')
+        difficulty: Сложность (easy, medium, hard)
+    """
     db = SessionLocal()
 
     try:
@@ -86,7 +94,12 @@ def seed_questions():
             print("⚠️ Вопросы не найдены. Проверьте структуру файла.")
             return
 
-        print("💾 Сохранение вопросов в базу данных...")
+        print(f"💾 Сохранение вопросов в базу данных...")
+        print(f"   📌 Тег: {tag or 'Не указан'}")
+        print(f"   📂 Категория: {category or 'Не указана'}")
+        print(f"   📊 Сложность: {difficulty}")
+        print()
+
         created_count = 0
         empty_answers = 0
 
@@ -101,7 +114,9 @@ def seed_questions():
             question_create = QuestionCreate(
                 question=question_text,
                 answer=answer_text,
-                difficulty="medium"
+                difficulty=difficulty,
+                tag=tag,
+                category=category
             )
             try:
                 create_question(question_create, db)
@@ -114,6 +129,8 @@ def seed_questions():
         db.commit()
         print(f"\n🎉 Успешно сохранено {created_count} вопросов!")
         print(f"📝 Из них с пустыми ответами: {empty_answers}")
+        print(f"📌 Тег: {tag or 'Не указан'}")
+        print(f"📂 Категория: {category or 'Не указана'}")
 
     except Exception as e:
         print(f"❌ Непредвиденная ошибка: {e}")
@@ -122,5 +139,65 @@ def seed_questions():
         db.close()
 
 
+def main():
+    """Парсинг аргументов командной строки"""
+    parser = argparse.ArgumentParser(
+        description="Загрузка вопросов из Markdown файла в базу данных",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Примеры использования:
+  python scripts/seed_questions.py --tag Python --category "Основы"
+  python scripts/seed_questions.py --tag Python --category "ООП" --difficulty hard
+  python scripts/seed_questions.py --tag "SQL" --category "DDL"
+  python scripts/seed_questions.py --tag "Web" --difficulty easy
+        """
+    )
+
+    parser.add_argument(
+        '--tag',
+        type=str,
+        help='Тег для всех вопросов (например: Python, SQL, Web)'
+    )
+
+    parser.add_argument(
+        '--category',
+        type=str,
+        help='Категория для всех вопросов (например: Основы, ООП, DDL)'
+    )
+
+    parser.add_argument(
+        '--difficulty',
+        type=str,
+        choices=['easy', 'medium', 'hard'],
+        default='medium',
+        help='Сложность вопросов (по умолчанию: medium)'
+    )
+
+    parser.add_argument(
+        '--file',
+        type=str,
+        help='Путь к файлу с вопросами (переопределяет FILE_PATH)'
+    )
+
+    # Парсим аргументы
+    args = parser.parse_args()
+
+    # Если указан файл, меняем путь
+    if args.file:
+        global FILE_PATH
+        FILE_PATH = args.file
+
+    print("=" * 60)
+    print("🚀 Загрузка вопросов из Markdown файла")
+    print("=" * 60)
+
+    # Запускаем загрузку
+    seed_questions(
+        tag=args.tag,
+        category=args.category,
+        difficulty=args.difficulty
+    )
+
+
 if __name__ == "__main__":
-    seed_questions()
+    main()
