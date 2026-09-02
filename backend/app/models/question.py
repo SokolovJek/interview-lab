@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, DateTime, func
+from sqlalchemy import Column, String, Text, DateTime, func, Enum, Index
 from sqlalchemy.orm import relationship
 
 from app.models.base import BaseModel
@@ -7,8 +7,31 @@ from app.models.base import BaseModel
 class Question(BaseModel):
     __tablename__ = "questions"
 
-    question = Column(Text, nullable=False)
-    answer = Column(Text, nullable=False)
+    # Основные поля
+    question = Column(Text, nullable=False, comment="Текст вопроса")
+    answer = Column(Text, nullable=False, comment="Ответ на вопрос")
+
+    # Категоризация
+    tag = Column(
+        String(50),
+        nullable=True,
+        index=True,
+        comment="Группировка по тегам (Python, Web, SQL, DevOps, etc.)"
+    )
+    category = Column(
+        String(50),
+        nullable=True,
+        index=True,
+        comment="Подгруппа (DDL, DML, ООП, Структуры данных, Алгоритмы, etc.)"
+    )
+
+    # Метаданные
+    difficulty = Column(
+        Enum('easy', 'medium', 'hard', name='difficulty_level'),
+        nullable=True,
+        default='medium',
+        comment="Уровень сложности: easy, medium, hard"
+    )
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
@@ -19,5 +42,12 @@ class Question(BaseModel):
         cascade="all, delete-orphan"
     )
 
+    # Составной индекс для быстрых запросов по обоим полям: тегу и группе
+    __table_args__ = (
+        Index('ix_questions_tag_category', 'tag', 'category'),
+    )
+
     def __repr__(self):
-        return f"<Question(id={self.id}, question='{self.question[:50]}...')>"
+        tags = f" [tag={self.tag}]" if self.tag else ""
+        category = f" [{self.category}]" if self.category else ""
+        return f"<Question(id={self.id}, question='{self.question[:50]}...'{tags}{category})>"

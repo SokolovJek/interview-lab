@@ -10,7 +10,10 @@ def create_question(question_data: QuestionCreate, db: Session) -> Question:
     """Создание нового вопроса"""
     question = Question(
         question=question_data.question,
-        answer=question_data.answer
+        answer=question_data.answer,
+        difficulty=question_data.difficulty,
+        tag=question_data.tag,
+        category=question_data.category
     )
     db.add(question)
     db.commit()
