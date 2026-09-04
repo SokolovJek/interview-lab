@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, validator, Field
+from pydantic import BaseModel, EmailStr, field_validator, Field, ConfigDict
 from typing import Optional
 
 class UserCreate(BaseModel):
@@ -6,7 +6,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=6)
 
-    @validator('username')
+    @field_validator('username')
     def validate_username(cls, v):
         if not v.isalnum() and '_' not in v:
             raise ValueError('Username должен содержать только буквы, цифры и _')
@@ -21,7 +21,7 @@ class UserUpdate(BaseModel):
     is_active: Optional[bool] = None
     is_superuser: Optional[bool] = None
 
-    @validator('username')
+    @field_validator('username')
     def validate_username(cls, v):
         if v is None:
             return v
@@ -29,8 +29,7 @@ class UserUpdate(BaseModel):
             raise ValueError('Username должен содержать только буквы, цифры и _')
         return v
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ShowUser(BaseModel):
@@ -40,5 +39,4 @@ class ShowUser(BaseModel):
     is_active: bool
     is_superuser: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

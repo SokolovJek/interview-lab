@@ -7,7 +7,7 @@ from app.core.hashing import Hasher
 
 def create_new_user(user: UserCreate, db: Session):
     """
-    Извлекли логику работы с БД из функции create_user(end-point '/user/'),
+    Извлекли логику работы с БД из функции create_user(end-point '/users/'),
      для того чтоб в случае чего можно было изменить ORM
     """
     user = User(username=user.username,
@@ -30,7 +30,7 @@ def get_user_by_email(email: str, db: Session):
 
 def retrieve_user(id_user: int, db: Session):
     """
-    Получение конкретного пользователя для (end-point '/user/get/{id_user}/')
+    Получение конкретного пользователя для (end-point '/users/get/{id_user}/')
     """
     item = db.query(User).filter(User.id == id_user).first()
     return item

@@ -2,20 +2,22 @@ import json
 
 
 def test_create_user(client):
-    data = {'username': 'testuser',
-            'email': 'testuser@mail.com',
-            'password': 'test123'}
-    response = client.post('/user/register', json.dumps(data))
-    assert response.status_code == 200
+    data = {
+        'username': 'testuser',
+        'email': 'testuser@mail.com',
+        'password': 'test123'
+    }
+    response = client.post('/users/register', json=data)
+    assert response.status_code == 201
     assert response.json()['email'] == 'testuser@mail.com'
-    assert response.json()['is_active']
+    assert response.json()['is_active'] is True
 
 
 def test_login_user(client):
     data = {'username': 'testuser',
             'email': 'testuser@mail.com',
             'password': 'test123'}
-    client.post('/user/register', json.dumps(data))
+    client.post('/users/register', json.dumps(data))
 
     data = {'username': 'testuser@mail.com',
             'password': 'test123'}
@@ -30,7 +32,7 @@ def test_login_user_fake_password(client):
     data = {'username': 'testuser',
             'email': 'testuser@mail.com',
             'password': 'test123'}
-    client.post('/user/register', json.dumps(data))
+    client.post('/users/register', json.dumps(data))
 
     data = {'username': 'testuser@mail.com',
             'password': 'test122'}
@@ -40,7 +42,7 @@ def test_login_user_fake_password(client):
 
 
 def test_read_user(client, normal_user_token_headers):
-    msg = client.post("/user/1", headers=normal_user_token_headers)
+    msg = client.post("/users/1", headers=normal_user_token_headers)
     assert msg.status_code == 200
     assert msg.json()['email'] == 'test@example.com'
     assert msg.json()['is_active']
@@ -50,9 +52,9 @@ def test_read_user_fake_data(client, normal_user_token_headers):
     data = {'username': 'testuser',
             'email': 'testuser@mail.com',
             'password': 'test123'}
-    client.post('/user/register', json.dumps(data))
+    client.post('/users/register', json.dumps(data))
 
-    msg = client.post("/user/3", headers=normal_user_token_headers)
+    msg = client.post("/users/3", headers=normal_user_token_headers)
     assert msg.status_code == 404
     assert msg.json()['detail'] == 'Пользователя с идентификатором 3 не существует'
 
@@ -61,9 +63,9 @@ def test_read_user_not_have_permission(client, normal_user_token_headers):
     data = {'username': 'testuser',
             'email': 'testuser@mail.com',
             'password': 'test123'}
-    client.post('/user/register', json.dumps(data))
+    client.post('/users/register', json.dumps(data))
 
-    msg = client.post("/user/2", headers=normal_user_token_headers)
+    msg = client.post("/users/2", headers=normal_user_token_headers)
     assert msg.status_code == 401
     assert msg.json()['detail'] == f"Вам не разрешено просмптривать пользователя с id № 2," \
                                    f" так как вы не владелец учетной записи № 2!!!!"
@@ -73,7 +75,7 @@ def test_get_refresh_token_fake(client):
     data = {'username': 'testuser',
             'email': 'testuser@mail.com',
             'password': 'test123'}
-    client.post('/user/register', json.dumps(data))
+    client.post('/users/register', json.dumps(data))
 
     data = {'username': 'testuser@mail.com',
             'password': 'test123'}
@@ -93,7 +95,7 @@ def test_get_refresh_token(client):
     data = {'username': 'testuser',
             'email': 'testuser@mail.com',
             'password': 'test123'}
-    client.post('/user/register', json.dumps(data))
+    client.post('/users/register', json.dumps(data))
 
     data = {'username': 'testuser@mail.com',
             'password': 'test123'}
