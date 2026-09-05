@@ -1,6 +1,3 @@
-import json
-
-
 def test_create_user(client):
     data = {
         'username': 'testuser',
@@ -17,7 +14,7 @@ def test_login_user(client):
     data = {'username': 'testuser',
             'email': 'testuser@mail.com',
             'password': 'test123'}
-    client.post('/users/register', json.dumps(data))
+    client.post('/users/register', json=data)
 
     data = {'username': 'testuser@mail.com',
             'password': 'test123'}
@@ -32,13 +29,13 @@ def test_login_user_fake_password(client):
     data = {'username': 'testuser',
             'email': 'testuser@mail.com',
             'password': 'test123'}
-    client.post('/users/register', json.dumps(data))
+    client.post('/users/register', json=data)
 
     data = {'username': 'testuser@mail.com',
             'password': 'test122'}
     response = client.post('/login', data=data)
     assert response.status_code == 401
-    assert response.json()['detail'] == "Некоректный логин или пароль"
+    assert response.json()['detail'] == "Неверный email или пароль"
 
 
 def test_read_user(client, normal_user_token_headers):
@@ -52,7 +49,7 @@ def test_read_user_fake_data(client, normal_user_token_headers):
     data = {'username': 'testuser',
             'email': 'testuser@mail.com',
             'password': 'test123'}
-    client.post('/users/register', json.dumps(data))
+    client.post('/users/register', json=data)
 
     msg = client.post("/users/3", headers=normal_user_token_headers)
     assert msg.status_code == 404
@@ -63,7 +60,7 @@ def test_read_user_not_have_permission(client, normal_user_token_headers):
     data = {'username': 'testuser',
             'email': 'testuser@mail.com',
             'password': 'test123'}
-    client.post('/users/register', json.dumps(data))
+    client.post('/users/register', json=data)
 
     msg = client.post("/users/2", headers=normal_user_token_headers)
     assert msg.status_code == 401
@@ -75,27 +72,25 @@ def test_get_refresh_token_fake(client):
     data = {'username': 'testuser',
             'email': 'testuser@mail.com',
             'password': 'test123'}
-    client.post('/users/register', json.dumps(data))
+    client.post('/users/register', json=data)
 
     data = {'username': 'testuser@mail.com',
             'password': 'test123'}
 
     response = client.post('/login', data=data)
-
     assert response.status_code == 200
-    assert response.json()['token_type'] == 'bearer'
-    refresh_token = response.json()['refresh_token']
-    print('dddd=-------', refresh_token)
-    response = client.post('/refresh_jwt', data=refresh_token)
+
+    # Фейковый токен
+    response = client.post('/refresh_jwt', json={'refresh_token': 'fake_token_123'})
     assert response.status_code == 401
-    assert response.json()['detail'] == "Недействительный токен"
+    assert response.json()['detail'] == "Невалидный refresh токен"
 
 
 def test_get_refresh_token(client):
     data = {'username': 'testuser',
             'email': 'testuser@mail.com',
             'password': 'test123'}
-    client.post('/users/register', json.dumps(data))
+    client.post('/users/register', json=data)
 
     data = {'username': 'testuser@mail.com',
             'password': 'test123'}

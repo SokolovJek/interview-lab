@@ -49,7 +49,12 @@ python test_config.py
 ### Для запуска тестов:
 ```
 cd backend
+
+# запуск всех тестов
 pytest tests/
+
+запуск конкретного теста
+pytest tests/test_routes/test_user.py::test_login_user -v
 ```
 
 Для просмотра всех доступных end-point:

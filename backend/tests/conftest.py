@@ -1,23 +1,26 @@
-"""конфигурации для тестирования"""
 from typing import Any
 from typing import Generator
+import os
+import sys
+from pathlib import Path
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
+from dotenv import load_dotenv
 
-import sys
-import os
 
-# это нужно для включения бэкенд директории в sys.path, чтобы мы могли импортировать(работать с) db, apis.py
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Загружаем .env.test
+env_path = Path(__file__).parent.parent / ".env.test"
+if env_path.exists():
+    load_dotenv(env_path, override=True)
+
 
 from app.models.base import Base
 from app.core.database import get_db
 from app.api.v1.router import api_router
-from app.core.config import settings
 from tests.utils.users import authentication_token_from_email
 
 
@@ -27,6 +30,8 @@ def start_application():
     return app
 
 
+TEST_EMAIL = os.environ.get("TEST_USER_EMAIL")
+TEST_PASSWORD = os.environ.get("TEST_USER_PASSWORD")
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
 
 # {"check_same_thread": False} отключаем защиту от одновременного запроса к БД от разных потоков
@@ -80,7 +85,5 @@ def client(app: FastAPI, db_session: SessionTesting) -> Generator[TestClient, An
 def normal_user_token_headers(client: TestClient, db_session: Session):
     """
     Для получения действительного JWT токена.
-    По сути, сделали функцию normal_user_token_header фикстурой на уровне модуля.
-    Он будет вызван один раз для нашего варианта использования и даст нам токен jwt.
     """
-    return authentication_token_from_email(client=client, email=settings.TEST_USER_EMAIL, db=db_session)
+    return authentication_token_from_email(client=client, email=TEST_EMAIL, db=db_session)

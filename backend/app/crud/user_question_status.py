@@ -14,7 +14,7 @@ def create_status(status_data: UserQuestionStatusCreate, db: Session) -> UserQue
         status=status_data.status,
         attempts=0,
         correct=0,
-        first_seen_at=datetime.utcnow()
+        first_seen_at=datetime.now()
     )
     db.add(status)
     db.commit()
@@ -83,14 +83,14 @@ def update_question_status(
         status = create_status(status_data, db)
         status.attempts = 1
         status.correct = 1 if is_correct else 0
-        status.last_attempt_at = datetime.utcnow()
+        status.last_attempt_at = datetime.now()
     else:
         # Обновляем существующую
         status.attempts += 1
         if is_correct:
             status.correct += 1
         status.status = new_status
-        status.last_attempt_at = datetime.utcnow()
+        status.last_attempt_at = datetime.now()
 
     db.add(status)
     db.commit()

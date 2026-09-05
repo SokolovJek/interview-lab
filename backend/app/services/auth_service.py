@@ -50,7 +50,7 @@ class AuthService:
         # 4. Генерируем hash для сессии
         session_hash = generate_session_hash()
         user.hash = session_hash
-        user.last_enter = datetime.utcnow()
+        user.last_enter = datetime.now()
         db.add(user)
         db.commit()
         db.refresh(user)
@@ -76,7 +76,7 @@ class AuthService:
 
         # 2. Проверяем срок действия
         exp = payload.get('exp')
-        if exp and datetime.utcfromtimestamp(exp) < datetime.utcnow():
+        if exp and datetime.fromtimestamp(exp) < datetime.now():
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Refresh токен истек"
