@@ -9,7 +9,7 @@ from app.schemas.users import UserCreate
 
 def user_authentication_headers(client: TestClient, email: str, password: str):
     """
-    Создание заголовка с даными по токену
+    Создание заголовка с данными по токену
     """
     data = {'username': email, 'password': password}
     r = client.post('/login', data=data)
@@ -19,14 +19,28 @@ def user_authentication_headers(client: TestClient, email: str, password: str):
     return headers
 
 
-def authentication_token_from_email(client: TestClient, email: str, db: Session):
+def authentication_token_from_email(
+    client: TestClient,
+    email: str,
+    password: str,
+    username: str,
+    db: Session,
+):
     """
     Возвращает действительный токен для пользователя с заданным email.
     Если пользователь не существует, он сначала создается.
     """
-    password = 'random'
     user = get_user_by_email(email=email, db=db)
     if not user:
-        user_in_create = UserCreate(username=email, email=email, password=password)
+        user_in_create = UserCreate(
+            username=username,
+            email=email,
+            password=password
+        )
         user = create_new_user(user=user_in_create, db=db)
-    return user_authentication_headers(client=client, email=email, password=password)
+
+    return user_authentication_headers(
+        client=client,
+        email=email,
+        password=password
+    )

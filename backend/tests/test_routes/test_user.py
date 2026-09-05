@@ -39,7 +39,7 @@ def test_login_user_fake_password(client):
 
 
 def test_read_user(client, normal_user_token_headers):
-    msg = client.post("/users/1", headers=normal_user_token_headers)
+    msg = client.get("/users/1", headers=normal_user_token_headers)
     assert msg.status_code == 200
     assert msg.json()['email'] == 'test@example.com'
     assert msg.json()['is_active']
@@ -51,9 +51,9 @@ def test_read_user_fake_data(client, normal_user_token_headers):
             'password': 'test123'}
     client.post('/users/register', json=data)
 
-    msg = client.post("/users/3", headers=normal_user_token_headers)
+    msg = client.get("/users/3", headers=normal_user_token_headers)
     assert msg.status_code == 404
-    assert msg.json()['detail'] == 'Пользователя с идентификатором 3 не существует'
+    assert msg.json()['detail'] == 'Пользователь с идентификатором 3 не существует'
 
 
 def test_read_user_not_have_permission(client, normal_user_token_headers):
@@ -62,10 +62,9 @@ def test_read_user_not_have_permission(client, normal_user_token_headers):
             'password': 'test123'}
     client.post('/users/register', json=data)
 
-    msg = client.post("/users/2", headers=normal_user_token_headers)
-    assert msg.status_code == 401
-    assert msg.json()['detail'] == f"Вам не разрешено просмптривать пользователя с id № 2," \
-                                   f" так как вы не владелец учетной записи № 2!!!!"
+    msg = client.get("/users/2", headers=normal_user_token_headers)
+    assert msg.status_code == 403
+    assert msg.json()['detail'] == "У вас нет прав для просмотра пользователя с id 2"
 
 
 def test_get_refresh_token_fake(client):

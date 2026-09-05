@@ -30,8 +30,10 @@ def start_application():
     return app
 
 
-TEST_EMAIL = os.environ.get("TEST_USER_EMAIL")
-TEST_PASSWORD = os.environ.get("TEST_USER_PASSWORD")
+TEST_EMAIL = os.environ.get("TEST_USER_EMAIL", "test@example.com")
+TEST_PASSWORD = os.environ.get("TEST_USER_PASSWORD", "test123")
+TEST_USERNAME = os.environ.get("TEST_USER_NAME", "test_user")
+
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
 
 # {"check_same_thread": False} отключаем защиту от одновременного запроса к БД от разных потоков
@@ -86,4 +88,10 @@ def normal_user_token_headers(client: TestClient, db_session: Session):
     """
     Для получения действительного JWT токена.
     """
-    return authentication_token_from_email(client=client, email=TEST_EMAIL, db=db_session)
+    return authentication_token_from_email(
+        client=client,
+        email=TEST_EMAIL,
+        password=TEST_PASSWORD,
+        username=TEST_USERNAME,
+        db=db_session
+    )
